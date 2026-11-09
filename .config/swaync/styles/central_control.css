@@ -25,7 +25,12 @@
   border-radius: 1.5rem;
   margin: 0.75rem;
   padding: 1rem;
-  box-shadow: 0 4px 6px #000000, 0 2px 4px #000000;
+  /* Material-3 Elevation 5 — floating drawer over desktop */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.5),
+    0 12px 32px rgba(0, 0, 0, 0.55),
+    0 24px 64px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(235, 219, 178, 0.08);
 }
 
 /* Quick Settings Grid */
@@ -44,7 +49,10 @@
   min-height: 3rem;
   border-radius: 1.5rem;
   padding: 0;
-  box-shadow: 0 1px 3px #000000;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(235, 219, 178, 0.05);
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
@@ -73,7 +81,10 @@
   margin: 0.75rem;
   border-radius: 1rem;
   background: @bg1;
-  box-shadow: 0 1px 3px #000000;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(235, 219, 178, 0.05);
 }
 
 .widget-backlight trough,
@@ -115,7 +126,10 @@
   border-radius: 1rem;
   margin: 0.75rem;
   padding: 1rem;
-  box-shadow: 0 1px 3px #000000;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(235, 219, 178, 0.05);
 }
 
 .widget-mpris-player {
@@ -192,7 +206,10 @@
   border-radius: 1rem;
   margin: 0.75rem;
   padding: 0.75rem;
-  box-shadow: 0 1px 3px #000000;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(235, 219, 178, 0.06);
 }
 
 .control-center .notification-row .notification-background .notification.critical {
@@ -260,15 +277,48 @@ progressbar trough slider {
 
 /* Notification groups */
 .notification-group {
+  background: @bg1;
+  border-radius: 1rem;
   margin: 0.75rem;
+  padding: 0.25rem;
+  /* Same elevation as a notification card */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(235, 219, 178, 0.06);
+}
+
+/* Fully collapse sibling rows inside a group so only the top notification
+   renders as a clean card. Siblings are still in the DOM (the collapse button
+   expands them back) but take up zero visual space. GTK CSS has no
+   `display: none`, so we zero-out opacity + dimensions. */
+.notification-group .notification-row:not(:first-child) {
+  opacity: 0;
+  min-height: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.notification-group .notification-row:not(:first-child) .notification-background {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
 }
 
 .notification-group-headers {
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  color: @fg2;
+  font-weight: 500;
 }
 
 .notification-group-icon {
-  margin: 0.75rem;
+  margin: 0.5rem;
+  color: @fg1;
 }
 
 .notification-group-collapse-button,

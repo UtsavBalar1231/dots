@@ -1,5 +1,12 @@
 # Completion system configuration
 
+# Eagerly load completion modules at startup instead of relying on lazy
+# module autoload. If zsh is upgraded by pacman while this shell is running,
+# /usr/lib/zsh/$OLD_VERSION/ disappears and lazy autoload of zsh/computil
+# fails with "command not found: comptry/comptags" on the first Tab press.
+# Preloading makes running shells immune to package upgrades.
+zmodload zsh/complete zsh/computil zsh/complist zsh/zutil 2>/dev/null
+
 # Basic completion styling
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
@@ -38,6 +45,9 @@ bindkey -M menuselect 'l' vi-forward-char
 
 # FZF-tab configuration
 if command -v fzf &>/dev/null; then
+  # Disable default menu (fzf-tab replaces it)
+  zstyle ':completion:*' menu no
+
   # Preview configuration based on available tools
   if command -v eza &>/dev/null; then
     zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
@@ -47,9 +57,22 @@ if command -v fzf &>/dev/null; then
     zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always --line-range=:500 $realpath 2>/dev/null || eza -1 --color=always --icons $realpath 2>/dev/null || ls -1 --color=always $realpath'
   fi
 
-  zstyle ':fzf-tab:*' fzf-flags --height=70% --preview-window=right:50%:wrap
+  # Better flags with tiebreak for improved sorting
+  zstyle ':fzf-tab:*' fzf-flags --height=70% --preview-window=right:50%:wrap --tiebreak=chunk --ignore-case
   zstyle ':fzf-tab:*' switch-group ',' '.'
 
   # Use tmux popup if available
   [[ -n "$TMUX" ]] && zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+  # Git-specific previews
+  zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
+    'git diff $word | delta 2>/dev/null || git diff $word'
+  zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
+    'git log --color=always $word'
+  zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
+    'case "$group" in
+      "modified file") git diff $word | delta 2>/dev/null || git diff $word ;;
+      "recent commit object name") git log --oneline --color=always $word ;;
+      *) eza -1 --color=always --icons $realpath 2>/dev/null || ls -1 --color=always $realpath ;;
+    esac'
 fi

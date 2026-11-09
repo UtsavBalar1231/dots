@@ -22,13 +22,11 @@ return {
 
   -- UI enhancements
   {
-    "NvChad/nvim-colorizer.lua",
-    event = "VeryLazy",
+    "catgoose/nvim-colorizer.lua",
+    event = "BufReadPre",
     opts = {
-      user_default_options = {
-        names = false,
-        rgb_fn = true,
-        hsl_fn = true,
+      options = {
+        parsers = { css_fn = true },
       },
     },
   },
@@ -44,7 +42,6 @@ return {
     "kawre/leetcode.nvim",
     cmd = "Leet",
     dependencies = {
-      "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
     },

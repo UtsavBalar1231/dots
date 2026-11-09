@@ -1,5 +1,5 @@
 * {
-	font: "JetBrainsMono Nerd Font 10";
+	font: "Maple Mono NF 10";
 
 	bg0: #1f1f1f80;
 	bg1: #202020bf;
@@ -62,7 +62,7 @@ icon-search {
 }
 
 entry {
-	font: "JetBrainsMono Nerd Font 12";
+	font: "Maple Mono NF 12";
 	placeholder: "Type here to search";
 	placeholder-color: @fg1;
 }

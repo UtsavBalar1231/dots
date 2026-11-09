@@ -70,6 +70,7 @@ return {
 				swap = {
 					enable = true,
 					swap_next = {
+						-- NOTE: <leader>a/<leader>A may conflict with sidekick's <leader>a* prefix
 						["<leader>a"] = "@parameter.inner",
 					},
 					swap_previous = {
@@ -84,6 +85,7 @@ return {
 
 	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
+		branch = "main",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		event = "VeryLazy",
 	},
@@ -105,7 +107,13 @@ return {
 					end
 				end,
 			}):map("<leader>ut")
-			return { mode = "cursor", max_lines = 3 }
+			return {
+				mode = "cursor",
+				max_lines = 3,
+				multiwindow = false,
+				min_window_height = 0,
+				multiline_threshold = 20,
+			}
 		end,
 	},
 

@@ -5,22 +5,28 @@ return {
     signs = {
       add = { text = "▎" },
       change = { text = "▎" },
-      delete = { text = "" },
-      topdelete = { text = "" },
+      delete = { text = "▔" },
+      topdelete = { text = "▔" },
       changedelete = { text = "▎" },
       untracked = { text = "▎" },
     },
     signs_staged = {
       add = { text = "▎" },
       change = { text = "▎" },
-      delete = { text = "" },
-      topdelete = { text = "" },
+      delete = { text = "▔" },
+      topdelete = { text = "▔" },
       changedelete = { text = "▎" },
     },
+    signs_staged_enable = true,
     signcolumn = true,
     numhl = true,
     linehl = false,
     word_diff = true,
+    watch_gitdir = {
+      follow_files = true,
+    },
+    auto_attach = true,
+    attach_to_untracked = false,
     preview_config = {
       border = "rounded",
       style = "minimal",
@@ -29,7 +35,7 @@ return {
       col = 1,
     },
     on_attach = function(bufnr)
-      local gs = package.loaded.gitsigns
+      local gs = require("gitsigns")
 
       local function map(mode, l, r, opts)
         opts = opts or {}
@@ -40,27 +46,27 @@ return {
       -- Navigation
       map("n", "<leader>g<Down>", function()
         if vim.wo.diff then
-          return "<leader>g<Down>"
+          vim.cmd.normal({ "<leader>g<Down>", bang = true })
+        else
+          gs.nav_hunk("next")
         end
-        vim.schedule(function()
-          gs.next_hunk()
-        end)
-        return "<Ignore>"
-      end, { expr = true, desc = "Git: Next hunk" })
+      end, { desc = "Git: Next hunk" })
 
       map("n", "<leader>g<Up>", function()
         if vim.wo.diff then
-          return "<leader>g<Up>"
+          vim.cmd.normal({ "<leader>g<Up>", bang = true })
+        else
+          gs.nav_hunk("prev")
         end
-        vim.schedule(function()
-          gs.prev_hunk()
-        end)
-        return "<Ignore>"
-      end, { expr = true, desc = "Git: Previous hunk" })
+      end, { desc = "Git: Previous hunk" })
 
       -- Actions
       map("n", "<leader>gp", gs.preview_hunk, { desc = "Git: Preview hunk" })
+      map("n", "<leader>gi", gs.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
       map("n", "<leader>gd", gs.diffthis, { desc = "Git: Diff this" })
+      map("n", "<leader>gD", function()
+        gs.diffthis("~")
+      end, { desc = "Git: Diff this (against HEAD~)" })
       map("v", "<leader>hs", function()
         gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
       end, { desc = "Git: Stage hunk" })
@@ -74,16 +80,19 @@ return {
         gs.blame_line({ full = true })
       end, { desc = "Git: Blame line" })
       map("n", "<leader>tb", gs.toggle_current_line_blame, { desc = "Git: Toggle current line blame" })
-      map("n", "<leader>hD", function()
-        gs.diffthis("~")
-      end, { desc = "Git: Diff this (against HEAD~)" })
       map("n", "<leader>td", gs.toggle_deleted, { desc = "Git: Toggle deleted" })
+      map("n", "<leader>gq", function()
+        gs.setqflist("all")
+      end, { desc = "Git: Quickfix all hunks (repo)" })
+
+      -- Text object
+      map({ "o", "x" }, "ih", gs.select_hunk, { desc = "Git: Select hunk" })
     end,
   },
   config = function(_, opts)
     require("gitsigns").setup(opts)
 
-    -- Add Snacks toggle for gitsigns
+    -- Snacks toggle for gitsigns sign column
     Snacks.toggle({
       name = "Git Signs",
       get = function()

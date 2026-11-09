@@ -1,6 +1,7 @@
 return {
   "folke/flash.nvim",
   event = "VeryLazy",
+  ---@type Flash.Config
   opts = {
     jump = {
       autojump = true,
@@ -17,12 +18,6 @@ return {
         highlight = { backdrop = true },
         jump = { autojump = false },
       },
-    },
-    prompt = {
-      win_config = { border = "none" },
-    },
-    search = {
-      wrap = true,
     },
   },
   keys = {

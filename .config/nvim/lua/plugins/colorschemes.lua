@@ -23,8 +23,8 @@ return {
       vim.g.gruvbox_material_ui_contrast = "high"
       vim.g.gruvbox_material_visual = "green background"
       vim.cmd([[
-				let g:gruvbox_material_colors_override = { 'bg_dim': ['#0e1010', '232'], 'bg0': ['#191817', '234'], 'bg1': ['#1d2021', '235'], 'bg2': ['#181615', '235'], 'bg3': ['#201d1b', '236'], 'bg4': ['#332e2a', '237'], 'bg5': ['#3e3732', '237'], 'grey0': ['#49413a', '243']}
-			]])
+			let g:gruvbox_material_colors_override = { 'bg_dim': ['#0e1010', '232'], 'bg0': ['#191817', '234'], 'bg1': ['#1d2021', '235'], 'bg2': ['#181615', '235'], 'bg3': ['#201d1b', '236'], 'bg4': ['#332e2a', '237'], 'bg5': ['#3e3732', '237'], 'grey0': ['#49413a', '243']}
+		]])
 
       local configuration = vim.fn["gruvbox_material#get_configuration"]()
       local palette = vim.fn["gruvbox_material#get_palette"](
@@ -40,16 +40,6 @@ return {
         NormalFloat = { bg = "none", fg = palette.fg0[1] },
         FloatBorder = { bg = "none" },
         FloatTitle = { bg = "none", fg = palette.orange[1] },
-        TelescopeTitle = { bg = "none", fg = palette.fg0[1] },
-        TelescopeBorder = { bg = "none", fg = palette.fg0[1] },
-        TelescopeNormal = { fg = "none" },
-        TelescopePromptNormal = { bg = "none", fg = palette.fg0[1] },
-        TelescopeResultsNormal = { bg = "none", fg = palette.fg0[1] },
-        TelescopeResultsDiffUntracked = { bg = "none", fg = palette.orange[1] },
-        TelescopeSelection = { bg = palette.bg5[1], fg = palette.fg0[1] },
-        TelescopePreviewDirectory = { fg = palette.red[1] },
-        TelescopePromptCounter = { bg = "none", fg = palette.fg0[1] },
-        TelescopeMatching = { bold = false, bg = "none", fg = palette.green[1] },
         Visual = { bg = palette.bg_visual_red[1] },
         ColorColumn = { bg = palette.bg_visual_blue[1] },
         CursorLine = { bg = palette.bg3[1], blend = 25 },
@@ -96,7 +86,6 @@ return {
         invert_selection = false,
         invert_signs = false,
         invert_tabline = false,
-        invert_intend_guides = false,
         inverse = true,
         contrast = "hard",
         palette_overrides = {
@@ -265,6 +254,10 @@ return {
         noice = true,
         notify = true,
         semantic_tokens = true,
+        snacks = {
+          enabled = true,
+          indent_scope_color = "",
+        },
         telescope = true,
         treesitter = true,
         treesitter_context = true,

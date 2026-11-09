@@ -27,7 +27,6 @@ return {
             end,
           },
           buffer = {
-            name = "Buffer",
             max_items = 3,
             min_keyword_length = 3,
             score_offset = 100,

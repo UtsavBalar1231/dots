@@ -36,7 +36,11 @@
       "Bash(tree:*)",
       "Bash(git -C /home/utsav/.config/nvim diff lua/plugins/rustaceanvim.lua)",
       "Bash(/tmp/rustaceanvim_fixed.lua)",
-      "Bash(lua -e:*)"
+      "Bash(lua -e:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir:*)",
+      "Bash(luac:*)",
+      "Bash(do echo:*)"
     ],
     "deny": [],
     "ask": []

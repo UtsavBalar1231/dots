@@ -10,7 +10,7 @@ configuration {
     window-format: "{w} - {c} - {t:0}";
     sort: true;
     sorting-method: "fzf";
-    font: "JetBrainsMono Nerd Font 10";
+    font: "Maple Mono NF 10";
 
     matching: "normal";
     tokenize: true;

@@ -1,45 +1,19 @@
 return {
   "mrcjkb/rustaceanvim",
   ft = { "rust" },
-  version = "^6",
+  version = "^8",
   lazy = false,
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    "neovim/nvim-lspconfig",
-  },
   init = function()
     vim.g.rustaceanvim = {
       tools = {
-        -- Prevents "Invalid 'col': out of range" errors
-        inlay_hints = {
-          auto = false, -- Completely disable automatic inlay hints
-          only_current_line = true,
-          show_parameter_hints = true,
-          parameter_hints_prefix = "◀ ",
-          other_hints_prefix = "▶ ",
-          max_len_align = false,
-          max_len_align_padding = 1,
-          right_align = false,
-          right_align_padding = 7,
-          highlight = "Comment",
-        },
-        hover_actions = {
-          border = "rounded",
-          auto_focus = false,
-          max_width = nil,
-          max_height = nil,
-        },
-        code_action_group = {
-          border = "rounded",
+        code_actions = {
+          ui_select_fallback = false,
         },
         float_win_config = {
-          border = "rounded",
-          max_width = 100,
-          max_height = 30,
           auto_focus = false,
         },
         reload_workspace_from_cargo_toml = true,
-        open_url = vim.ui.open or require("rustaceanvim.os").open_url,
+        open_url = vim.ui.open,
       },
       server = {
         standalone = true,
@@ -89,11 +63,11 @@ return {
           end, vim.tbl_extend("force", opts, { desc = "Rust: Syntax Tree" }))
 
           vim.keymap.set("n", "<leader>rh", function()
-            vim.cmd.RustLsp("view_hir")
+            vim.cmd.RustLsp({ "view", "hir" })
           end, vim.tbl_extend("force", opts, { desc = "Rust: View HIR" }))
 
           vim.keymap.set("n", "<leader>rM", function()
-            vim.cmd.RustLsp("view_mir")
+            vim.cmd.RustLsp({ "view", "mir" })
           end, vim.tbl_extend("force", opts, { desc = "Rust: View MIR" }))
 
           vim.keymap.set("n", "<leader>re", function()

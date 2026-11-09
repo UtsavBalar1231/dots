@@ -14,11 +14,10 @@ if command -v fzf &>/dev/null; then
 fi
 
 # Fish-like autosuggestions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=200
 zi ice wait lucid depth'1' atload"_zsh_autosuggest_start"
 zi light zsh-users/zsh-autosuggestions
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 # Reminds you of existing aliases
 zi ice wait"2" lucid depth'1'

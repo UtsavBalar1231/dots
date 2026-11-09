@@ -1,9 +1,8 @@
--- Auto-dismiss copilot suggestions when blink.cmp menu opens
+-- Blink.cmp integration: hide copilot suggestions when completion menu is open
 -- vim.api.nvim_create_autocmd("User", {
--- 	pattern = "BlinkCmpMenuoOpen",
+-- 	pattern = "BlinkCmpMenuOpen",
 -- 	callback = function()
--- 		require("copilot.suggestion").dismiss()
--- 		vim.b.copilot_suggestion_hidden = false
+-- 		vim.b.copilot_suggestion_hidden = true
 -- 	end,
 -- })
 --
@@ -19,21 +18,10 @@ return {
 	cmd = "Copilot",
 	event = "InsertEnter",
 	opts = {
+		-- Enable copilot in filetypes disabled by the LazyVim ai.copilot extra
 		filetypes = {
 			markdown = true,
 			help = true,
 		},
-		-- suggestion = {
-		-- 	enabled = not vim.g.ai_cmp,
-		-- 	auto_trigger = true,
-		-- 	keymap = {
-		-- 		accept = "<C-g>",
-		-- 		accept_word = false,
-		-- 		accept_line = false,
-		-- 		next = "<M-up>",
-		-- 		prev = "<M-down>",
-		-- 	},
-		-- },
-		-- panel = { enabled = false },
 	},
 }

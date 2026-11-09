@@ -57,7 +57,7 @@ tooltip label {
   padding: 4px 12px;
   background: @bg2;
   border-radius: 8px;
-  margin: 4px 2px;
+  margin: 4px 6px;
 }
 #workspaces button {
   color: @color8;
@@ -85,6 +85,7 @@ tooltip label {
 #window {
   color: @color15;
   font-weight: 600;
+  margin: 0 4px;
 }
 #window:hover {
   color: @foreground;
@@ -161,7 +162,7 @@ tooltip label {
   background: transparent;
 }
 
-/* Audio volume */
+/* Audio volume (sink) */
 #pulseaudio {
   color: @color3;
   font-size: 28px;
@@ -170,7 +171,27 @@ tooltip label {
 #pulseaudio.muted {
   color: @color8;
 }
+#pulseaudio.bluetooth {
+  color: @color6;
+}
+#pulseaudio.bluetooth.muted {
+  color: @color8;
+}
 #pulseaudio:hover {
+  color: @color15;
+  background: transparent;
+}
+
+/* Microphone (source) */
+#pulseaudio-source {
+  color: @color5;
+  font-size: 28px;
+  padding: 8px 8px;
+}
+#pulseaudio-source.source-muted {
+  color: @color8;
+}
+#pulseaudio-source:hover {
   color: @color15;
   background: transparent;
 }
@@ -206,13 +227,18 @@ tooltip label {
 }
 
 /* Disk usage */
-#disk {
+#disk.root {
   color: @color2;
 }
-#disk.warning {
+#disk.home {
+  color: @color4;
+}
+#disk.root.warning,
+#disk.home.warning {
   color: @color3;
 }
-#disk.critical {
+#disk.root.critical,
+#disk.home.critical {
   color: @color1;
 }
 #disk:hover {
@@ -264,27 +290,37 @@ tooltip label {
   background: transparent;
 }
 
+/* Brightness */
+#custom-brightness {
+  color: @color3;
+}
+#custom-brightness:hover {
+  color: @color15;
+  background: transparent;
+}
+
 /* Shared module spacing and transparent background for all modules */
 #battery,
 #cpu,
 #memory,
-#disk {
-  background: transparent;
-  margin: 0 4px;
-  padding: 4px 8px;
-}
-
+#disk.root,
+#disk.home,
+#custom-brightness,
 #clock,
-#custom-launcher,
 #custom-notification,
 #mpris,
 #network,
 #pulseaudio,
-#bluetooth,
-#window,
-#workspaces {
+#pulseaudio-source,
+#bluetooth {
   background: transparent;
-  margin: 0 2px;
+  margin: 0 6px;
+  padding: 4px 10px;
+}
+
+#custom-launcher {
+  background: transparent;
+  margin: 0 4px;
   padding: 4px 4px;
 }
 

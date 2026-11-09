@@ -78,7 +78,6 @@ return {
           "--all-scopes-completion",
           "--background-index",
           "--clang-tidy",
-          "--cross-file-rename",
           "--completion-style=detailed",
           "--fallback-style=Microsoft",
           "--function-arg-placeholders",
@@ -87,7 +86,6 @@ return {
           "--limit-results=10",
           "--pch-storage=memory",
           "--query-driver=/usr/include/*",
-          "--suggest-missing-includes",
         },
       },
 
@@ -106,10 +104,6 @@ return {
             telemetry = { enable = false },
             workspace = {
               checkThirdParty = false,
-              library = {
-                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                [vim.fn.stdpath("config") .. "/lua"] = true,
-              },
             },
             codeLens = { enable = true },
             completion = { callSnippet = "Replace" },
@@ -152,19 +146,14 @@ return {
 
       texlab = {
         settings = {
-          latex = {
+          texlab = {
             build = {
               args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
               executable = "latexmk",
-              forwardSearch = {
-                executable = "zathura",
-                args = { "--synctex-forward", "%l:1:%f", "%p" },
-              },
               onSave = true,
             },
             chktex = { onEdit = true, onOpenAndSave = true },
-            lint = { onChange = true, onEdit = true, onSave = true },
-            latexindent = { enabled = true },
+            latexindent = { modifyLineBreaks = false },
             forwardSearch = {
               executable = "zathura",
               args = { "--synctex-forward", "%l:1:%f", "%p" },

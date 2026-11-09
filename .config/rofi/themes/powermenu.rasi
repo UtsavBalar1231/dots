@@ -20,7 +20,7 @@ USE_BUTTONS=YES
 */
 
 * {
-    font: "JetBrainsMono Nerd Font 12";
+    font: "Maple Mono NF 12";
 }
 
 /*****----- Main Window -----*****/

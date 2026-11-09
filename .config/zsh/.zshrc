@@ -14,6 +14,11 @@ source "$HOME/.zi/bin/zi.zsh"
 autoload -Uz _zi
 (( ${+_comps} )) && _comps[zi]=_zi
 
+# Version-scoped completion dump: a dump compiled by one zsh version is never
+# reused by another, so upgrades can't load a stale/incompatible .zcompdump.
+[[ -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh" ]] || mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+ZI[ZCOMPDUMP_PATH]="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}"
+
 ZSHCONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
 [[ -f "$ZSHCONFIG/.zshenv" ]] && source "$ZSHCONFIG/.zshenv"

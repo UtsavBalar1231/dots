@@ -19,7 +19,12 @@
   border-radius: 1rem;
   margin: 0.5rem 0;
   padding: 0;
-  box-shadow: 0 1px 3px #000000;
+  /* Material-3 Elevation 2 — soft, wider, offset down */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  /* Rim highlight for dark-on-dark separation */
+  border: 1px solid rgba(235, 219, 178, 0.06);
 }
 
 .notification {

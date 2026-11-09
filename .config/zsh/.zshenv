@@ -38,8 +38,10 @@ fi
 if command -v fzf &>/dev/null; then
 	export FZF_DEFAULT_OPTS="
     --height 40%
+    --tmux bottom,40%
     --layout=reverse
     --border
+    --ignore-case
     --info=inline
     --preview-window=right:60%:wrap
     --bind='ctrl-/:toggle-preview'
@@ -58,17 +60,42 @@ if command -v fzf &>/dev/null; then
 		export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git'
 	fi
 
-	# Use bat for preview if available
+	# CTRL-T: File selection with bat preview
 	if command -v bat &>/dev/null; then
-		export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range=:500 {}'"
+		export FZF_CTRL_T_OPTS="
+      --walker-skip .git,node_modules,target,__pycache__,.venv
+      --preview 'bat --color=always --line-range=:500 {}'
+      --bind 'ctrl-/:change-preview-window(down|hidden|)'
+    "
 	elif command -v batcat &>/dev/null; then
-		export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range=:500 {}'"
+		export FZF_CTRL_T_OPTS="
+      --walker-skip .git,node_modules,target,__pycache__,.venv
+      --preview 'batcat --color=always --line-range=:500 {}'
+      --bind 'ctrl-/:change-preview-window(down|hidden|)'
+    "
+	fi
+
+	# CTRL-R: History search with optimized scoring
+	export FZF_CTRL_R_OPTS="
+    --scheme=history
+    --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)+abort'
+    --color header:italic
+    --header 'CTRL-Y: copy | CTRL-/: wrap'
+  "
+
+	# ALT-C: Directory navigation with tree preview
+	if command -v eza &>/dev/null; then
+		export FZF_ALT_C_OPTS="
+      --walker-skip .git,node_modules,target,__pycache__,.venv
+      --preview 'eza --tree --level=2 --color=always --icons {}'
+    "
+	else
+		export FZF_ALT_C_OPTS="
+      --walker-skip .git,node_modules,target,__pycache__,.venv
+      --preview 'tree -C -L 2 {}'
+    "
 	fi
 fi
-
-# Claude code
-export MAX_MCP_OUTPUT_TOKENS="100000"
-export DISABLE_TELEMETRY="1"
 
 [[ -e "/usr/share/nvm/inist-nvm.sh" ]] && . /usr/share/nvm/init-nvm.sh
 

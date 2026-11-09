@@ -89,6 +89,9 @@ return {
 		scroll = { enabled = false },
 		scope = { enabled = true },
 		input = { enabled = true },
+		image = { enabled = true },
+		gh = {},
+		keymap = {},
 		terminal = {
 			win = { style = "terminal" },
 		},
@@ -327,6 +330,36 @@ return {
 			desc = "Git Log File",
 		},
 
+		-- GitHub pickers
+		{
+			"<leader>gi",
+			function()
+				Snacks.picker.gh_issue()
+			end,
+			desc = "GitHub Issues (open)",
+		},
+		{
+			"<leader>gI",
+			function()
+				Snacks.picker.gh_issue({ state = "all" })
+			end,
+			desc = "GitHub Issues (all)",
+		},
+		{
+			"<leader>gp",
+			function()
+				Snacks.picker.gh_pr()
+			end,
+			desc = "GitHub Pull Requests (open)",
+		},
+		{
+			"<leader>gP",
+			function()
+				Snacks.picker.gh_pr({ state = "all" })
+			end,
+			desc = "GitHub Pull Requests (all)",
+		},
+
 		-- Search
 		{
 			"<leader>sb",
@@ -363,6 +396,13 @@ return {
 				Snacks.picker.registers()
 			end,
 			desc = "Registers",
+		},
+		{
+			"<leader>s/",
+			function()
+				Snacks.picker.search_history()
+			end,
+			desc = "Search History",
 		},
 		{
 			"<leader>sa",
@@ -495,17 +535,72 @@ return {
 		{
 			"gd",
 			function()
+				-- If cursor is on a resolvable file path, open it.
+				-- Otherwise fall back to LSP definitions.
+				local cfile = vim.fn.expand("<cfile>")
+				if cfile and cfile ~= "" then
+					-- Expand ~, $VARS, and resolve relative to current buffer's dir
+					local expanded = vim.fn.expand(cfile)
+					local candidates = { expanded }
+					if not vim.startswith(expanded, "/") then
+						local bufdir = vim.fn.expand("%:p:h")
+						table.insert(candidates, bufdir .. "/" .. expanded)
+					end
+					for _, p in ipairs(candidates) do
+						-- Strip trailing punctuation often picked up from prose
+						local clean = p:gsub("[%.,;:%)%]}]+$", "")
+						if vim.fn.filereadable(clean) == 1 or vim.fn.isdirectory(clean) == 1 then
+							vim.cmd("edit " .. vim.fn.fnameescape(clean))
+							return
+						end
+					end
+				end
 				Snacks.picker.lsp_definitions()
 			end,
-			desc = "Goto Definition",
+			desc = "Goto Definition / File",
 		},
-
+		{
+			"gD",
+			function()
+				Snacks.picker.lsp_declarations()
+			end,
+			desc = "Goto Declaration",
+		},
+		{
+			"gr",
+			function()
+				Snacks.picker.lsp_references()
+			end,
+			nowait = true,
+			desc = "References",
+		},
+		{
+			"gI",
+			function()
+				Snacks.picker.lsp_implementations()
+			end,
+			desc = "Goto Implementation",
+		},
 		{
 			"gy",
 			function()
 				Snacks.picker.lsp_type_definitions()
 			end,
 			desc = "Goto T[y]pe Definition",
+		},
+		{
+			"gai",
+			function()
+				Snacks.picker.lsp_incoming_calls()
+			end,
+			desc = "C[a]lls Incoming",
+		},
+		{
+			"gao",
+			function()
+				Snacks.picker.lsp_outgoing_calls()
+			end,
+			desc = "C[a]lls Outgoing",
 		},
 		{
 			"<leader>ss",
@@ -625,6 +720,26 @@ return {
 			end,
 			desc = "Git Browse",
 			mode = { "n", "v" },
+		},
+
+		-- Neovim News
+		{
+			"<leader>N",
+			desc = "Neovim News",
+			function()
+				Snacks.win({
+					file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
+					width = 0.6,
+					height = 0.6,
+					wo = {
+						spell = false,
+						wrap = false,
+						signcolumn = "yes",
+						statuscolumn = " ",
+						conceallevel = 3,
+					},
+				})
+			end,
 		},
 
 		-- Word references
