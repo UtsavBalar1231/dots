@@ -1,0 +1,49 @@
+[ignore]
+patterns = [
+    "**/.git/",
+    "**/*.swp",
+    "**/*~",
+    "**/.DS_Store",
+    "**/__pycache__/",
+    "**/node_modules/",
+    "**/*.orig",
+    "**/*.rej",
+]
+
+[guard]
+secret_names = [
+    "**/.netrc",
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key",
+    "**/id_rsa*",
+    "**/id_ed25519*",
+    "**/id_ecdsa*",
+    "**/*.kdbx",
+    "**/*.gpg",
+    "**/credentials*",
+    "**/*token*",
+    "**/*secret*",
+    "**/gh/hosts.yml",
+    "**/*.ppk",
+    "**/rclone.conf",
+]
+
+[dirs]
+paths = []
+
+[modes]
+".config/nvim/.editorconfig" = "0600"
+".config/nvim/lua/util/init.lua" = "0600"
+".config/nvim/lua/util/shebang.lua" = "0600"
+".config/nvim/lua/util/url.lua" = "0600"
+".config/rofi/themes/clipboard.rasi" = "0600"
+".config/rofi/themes/network.rasi" = "0600"
+
+[hooks]
+
+[age]
+recipients = []
+
+[system]
