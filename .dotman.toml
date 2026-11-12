@@ -1,5 +1,16 @@
 [ignore]
 patterns = [
+    "**/.omc/",
+    "**/.omca/",
+    "**/.sisyphus/",
+    "**/.claude/",
+    "**/conductor/",
+    "**/*.bak",
+    "**/*.bak-*",
+    "**/*.maplebak",
+    "**/plugins.bak/",
+    "**/GEMINI.md",
+    "**/eww-colors.*",
     "**/.git/",
     "**/*.swp",
     "**/*~",
@@ -31,7 +42,18 @@ secret_names = [
 ]
 
 [dirs]
-paths = []
+paths = [
+    ".config/ghostty",
+    ".config/hypr",
+    ".config/kitty",
+    ".config/niri",
+    ".config/nvim",
+    ".config/qt5ct",
+    ".config/rofi",
+    ".config/swaync",
+    ".config/waybar",
+    ".config/zsh",
+]
 
 [modes]
 ".config/kitty/.claude/settings.local.json" = "0600"
@@ -60,6 +82,6 @@ paths = []
 [hooks]
 
 [age]
-recipients = []
+recipients = ["age1h2svctz5fewn5jpujacpqsgajtjqyvvudufj55wv44xfh2dpsutsugn9td"]
 
 [system]
