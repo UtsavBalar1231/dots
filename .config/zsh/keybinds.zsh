@@ -1,87 +1,66 @@
-# Key bindings
+(( _zsh_terminal )) || return 0
 
-# Use vim mode
-bindkey -v
+KEYTIMEOUT=5
 
-# Reduce delay when switching to normal mode (default is 0.4s)
-KEYTIMEOUT=1
-
-# Cursor shape changes for different vim modes
-function zle-keymap-select {
+autoload -Uz add-zle-hook-widget add-zsh-hook edit-command-line
+_zsh_cursor_keymap() {
   case $KEYMAP in
-    vicmd)      echo -ne '\e[1 q';; # block cursor in normal mode
-    viins|main) echo -ne '\e[5 q';; # beam cursor in insert mode
+    vicmd) printf '\e[1 q' ;;
+    viins|main) printf '\e[5 q' ;;
   esac
 }
-zle -N zle-keymap-select
+_zsh_cursor_insert() { printf '\e[5 q'; }
+add-zle-hook-widget keymap-select _zsh_cursor_keymap
+add-zle-hook-widget line-init _zsh_cursor_insert
+add-zsh-hook preexec _zsh_cursor_insert
 
-function zle-line-init {
-  echo -ne '\e[5 q' # beam cursor on init
-}
-zle -N zle-line-init
-
-# Reset cursor on preexec
-preexec() { echo -ne '\e[5 q' ;}
-
-# Keep useful emacs keybindings in insert mode
 bindkey -M viins '^A' beginning-of-line
 bindkey -M viins '^E' end-of-line
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+bindkey -M viins '^[[3~' delete-char
 bindkey -M viins '^K' kill-line
 bindkey -M viins '^U' backward-kill-line
 bindkey -M viins '^W' backward-kill-word
-# bindkey -M viins '^R' history-incremental-search-backward  # Commented out to allow FZF's Ctrl+R binding
+bindkey -M viins '^[d' kill-word
+bindkey -M viins '^[[Z' reverse-menu-complete
+(( $+widgets[fzf-history-widget] )) || bindkey -M viins '^R' history-incremental-search-backward
 
-# Fix backspace and delete in vim mode
-bindkey -M viins '^?' backward-delete-char
-bindkey -M viins '^H' backward-delete-char
-
-# Edit command line in $EDITOR with 'v' in normal mode
-autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
-
-# Undo and redo in normal mode
 bindkey -M vicmd 'u' undo
 bindkey -M vicmd '^R' redo
 
-# History substring search (up/down arrows and vim keys)
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
-bindkey '^[OA' history-substring-search-up
-bindkey '^[OB' history-substring-search-down
+typeset _history_up=up-line-or-history _history_down=down-line-or-history
+if (( $+widgets[history-substring-search-up] )); then
+  _history_up=history-substring-search-up
+  _history_down=history-substring-search-down
+fi
+for _key in '^[[A' '^[OA' '^P'; do
+  bindkey -M viins "$_key" "$_history_up"
+done
+for _key in '^[[B' '^[OB' '^N'; do
+  bindkey -M viins "$_key" "$_history_down"
+done
+bindkey -M vicmd k "$_history_up"
+bindkey -M vicmd j "$_history_down"
+unset _history_up _history_down _key
 
-# Vim mode - use j/k for history substring search in normal mode
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+for _key in '^[[1;5C' '^[[1;3C'; do
+  bindkey -M viins "$_key" forward-word
+done
+for _key in '^[[1;5D' '^[[1;3D'; do
+  bindkey -M viins "$_key" backward-word
+done
+for _key in '^[[H' '^[[1~' '^[OH'; do
+  bindkey -M viins "$_key" beginning-of-line
+done
+for _key in '^[[F' '^[[4~' '^[OF'; do
+  bindkey -M viins "$_key" end-of-line
+done
+unset _key
 
-# Word navigation
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
-bindkey '^[[1;3C' forward-word
-bindkey '^[[1;3D' backward-word
-
-# Home/End keys
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-bindkey '^[[1~' beginning-of-line
-bindkey '^[[4~' end-of-line
-
-# Delete key
-bindkey '^[[3~' delete-char
-
-# Line editing
-bindkey '^U' backward-kill-line
-bindkey '^K' kill-line
-bindkey '^W' backward-kill-word
-bindkey '^[d' kill-word
-
-# History search
-# bindkey '^R' history-incremental-search-backward
-# bindkey '^S' history-incremental-search-forward
-
-# Completion
-bindkey '^[[Z' reverse-menu-complete
-
-# Custom key bindings - add to ~/.config/zsh/local.zsh
+bindkey -M menuselect h vi-backward-char
+bindkey -M menuselect j vi-down-line-or-history
+bindkey -M menuselect k vi-up-line-or-history
+bindkey -M menuselect l vi-forward-char

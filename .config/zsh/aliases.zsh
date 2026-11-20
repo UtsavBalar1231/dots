@@ -21,15 +21,25 @@ alias h='history'
 alias hs='history | grep'
 
 # Config editing shortcuts
-alias zshrc='${EDITOR:-nvim} ~/.zshrc'
-alias zshconfig='${EDITOR:-nvim} ~/.config/zsh/.zshrc'
-alias aliases='${EDITOR:-nvim} ~/.config/zsh/aliases.zsh'
-alias reload='source ~/.zshrc'
+alias zshrc='${EDITOR:-nvim} "$ZSHCONFIG/.zshrc"'
+alias zshconfig=zshrc
+alias aliases='${EDITOR:-nvim} "$ZSHCONFIG/aliases.zsh"'
+reload() {
+  if [[ -o login ]]; then
+    exec zsh -il
+  else
+    exec zsh -i
+  fi
+}
 
 # Network utilities
 alias myip='curl -4 -s ifconfig.me'
 alias localip='ip -4 addr show | grep -oP "(?<=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1"'
-alias ports='netstat -tulanp'
+if (( $+commands[ss] )); then
+  alias ports='ss -tulnp'
+elif (( $+commands[netstat] )); then
+  alias ports='netstat -tulanp'
+fi
 
 # Quick server
 alias serve='python3 -m http.server'

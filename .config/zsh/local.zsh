@@ -6,28 +6,36 @@ alias gl='git log'
 alias gl1='git log --oneline'
 alias gll='git log --oneline --graph --all --decorate'
 
-# zoxide
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
-
 # Yazi wrapper: quit with q to cd into Yazi's final directory, Q to keep cwd.
 function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	local tmp cwd
+	tmp=$(mktemp -t yazi-cwd.XXXXXX) || return
 	command yazi "$@" --cwd-file="$tmp"
 	IFS= read -r -d '' cwd < "$tmp"
 	[[ "$cwd" != "$PWD" && -d "$cwd" ]] && builtin cd -- "$cwd"
 	command rm -f -- "$tmp"
 }
 
-# zi plugin manager (zoxide overwrites 'zi' with interactive directory picker)
-alias zsh_zi='source ~/.zi/bin/zi.zsh && zi'
-
-# starship
-! command -v starship >/dev/null 2>&1 && curl -sS https://starship.rs/install.sh | sh
-export STARSHIP_CONFIG=${XDG_CONFIG_HOME}/starship.toml
-eval "$(starship init zsh)"
-
 # Docker
-export DOCKER_HOST=unix:///var/run/docker.sock
+if [[ -z ${DOCKER_HOST-} && -z ${DOCKER_CONTEXT-} && -S /var/run/docker.sock ]]; then
+  export DOCKER_HOST=unix:///var/run/docker.sock
+fi
+
+if [[ -r ${NVM_DIR:-$XDG_CONFIG_HOME/nvm}/nvm.sh || -r $HOME/.nvm/nvm.sh || -r /usr/share/nvm/nvm.sh ]]; then
+  nvm() {
+    local nvm_script="${NVM_DIR:-$XDG_CONFIG_HOME/nvm}/nvm.sh"
+    [[ -r $nvm_script ]] || nvm_script="$HOME/.nvm/nvm.sh"
+    [[ -r $nvm_script ]] || nvm_script=/usr/share/nvm/nvm.sh
+    if [[ $nvm_script == /usr/share/nvm/nvm.sh ]]; then
+      export NVM_DIR="${NVM_DIR:-$XDG_CONFIG_HOME/nvm}"
+    else
+      export NVM_DIR="${NVM_DIR:-${nvm_script:h}}"
+    fi
+    unfunction nvm
+    source "$nvm_script" --no-use || return
+    nvm "$@"
+  }
+fi
 
 # x0.at - upload files to x0.at
 function x0() {
@@ -38,7 +46,8 @@ function x0() {
 	fi
 
 	echo "Uploading $file_name to x0.at..."
-	local url=$(curl -4 -# -f -F "file=@$1" https://x0.at 2>&1)
+	local url
+	url=$(curl -4 -# -f -F "file=@$1" https://x0.at 2>&1)
 	local exit_code=$?
 
 	if [ $exit_code -eq 0 ]; then
@@ -84,12 +93,13 @@ function __osc2_title() {
 	printf '\e]2;%s\e\\' "${PWD/#$HOME/~}"
 }
 
-add-zsh-hook -Uz chpwd __osc7_cwd
-add-zsh-hook -Uz chpwd __osc2_title
-
-# Run once at shell start
-__osc7_cwd
-__osc2_title
+if (( _zsh_terminal )); then
+  autoload -Uz add-zsh-hook
+  add-zsh-hook chpwd __osc7_cwd
+  add-zsh-hook chpwd __osc2_title
+  __osc7_cwd
+  __osc2_title
+fi
 
 # SSH wrapper for Kitty terminal compatibility
 # Remote servers often don't have xterm-kitty terminfo, so we use xterm-256color
@@ -112,13 +122,14 @@ function gdr() {
 
 	local file="$1"
 	local spinner='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-	local pid file_id
+	local pid file_id upload_log
+	upload_log=$(mktemp -t gdr-upload.XXXXXX) || return
 
 	# Suppress job control messages
 	setopt local_options no_monitor
 
 	# Start upload in background
-	gdrive files upload --print-only-id "$file" >/tmp/gdr_upload_$$ 2>&1 &
+	gdrive files upload --print-only-id "$file" > "$upload_log" 2>&1 &
 	pid=$!
 
 	# Show spinner while uploading
@@ -133,8 +144,8 @@ function gdr() {
 
 	wait $pid
 	local exit_code=$?
-	file_id=$(<"/tmp/gdr_upload_$$")
-	rm -f "/tmp/gdr_upload_$$"
+	file_id=$(<"$upload_log")
+	command rm -f -- "$upload_log"
 
 	if [[ $exit_code -ne 0 || -z "$file_id" ]]; then
 		printf "\r✗ Upload failed\n"
@@ -174,10 +185,8 @@ alias reboot='restart'
 #   url-pick -m      - Select multiple URLs
 #   url-pick -c      - Copy to clipboard instead of opening
 #
-# Keybinding: Ctrl+Alt+U (or Ctrl+Alt+E)
+# Keybindings: Ctrl-E followed by u, U, or c
 # ============================================================
-
-autoload -Uz url-pick url-pick-multi url-copy urls openurl 2>/dev/null
 
 function url-pick() {
   local urls selected
@@ -254,7 +263,14 @@ function url-copy() {
   
   [[ -z "$selected" ]] && return 0
   
-  echo -n "$selected" | xclip -se c
+  if [[ -n ${WAYLAND_DISPLAY-} ]] && (( $+commands[wl-copy] )); then
+    printf '%s' "$selected" | wl-copy || return
+  elif [[ -n ${DISPLAY-} ]] && (( $+commands[xclip] )); then
+    printf '%s' "$selected" | xclip -selection clipboard || return
+  else
+    print -u2 'No clipboard command is available.'
+    return 1
+  fi
   echo "Copied: $selected"
 }
 
@@ -272,10 +288,11 @@ function openurl() {
   [[ -n "$url" ]] && xdg-open "$url" &>/dev/null && echo "Opening: $url"
 }
 
-# Keybinding: Ctrl+Alt+U
-zle -N url-pick
-zle -N url-pick-multi  
-zle -N url-copy
-bindkey '^eu' url-pick
-bindkey '^eU' url-pick-multi
-bindkey '^ec' url-copy
+if (( _zsh_terminal && $+commands[fzf] )); then
+  zle -N url-pick
+  zle -N url-pick-multi
+  zle -N url-copy
+  bindkey -M viins '^eu' url-pick
+  bindkey -M viins '^eU' url-pick-multi
+  bindkey -M viins '^ec' url-copy
+fi
